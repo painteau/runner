@@ -1,0 +1,40 @@
+# Déploiement sur UNRAID HOME
+# Prérequis : PAT GitHub (scopes: repo + admin:org) dans GITHUB_PAT
+#
+# Lancement :
+#   GITHUB_PAT=xxx docker compose up -d
+
+services:
+  runner-painteau:
+    image: ghcr.io/painteau/runner:latest
+    container_name: runner-painteau
+    restart: unless-stopped
+    environment:
+      ACCESS_TOKEN: "${GITHUB_PAT}"
+      RUNNER_SCOPE: "user"
+      GITHUB_OWNER: "painteau"
+      RUNNER_NAME: "unraid-painteau"
+      RUNNER_WORKDIR: "/tmp/runner/work"
+      LABELS: "self-hosted,linux,x64"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-painteau-work:/tmp/runner
+
+  runner-bzhzion:
+    image: ghcr.io/painteau/runner:latest
+    container_name: runner-bzhzion
+    restart: unless-stopped
+    environment:
+      ACCESS_TOKEN: "${GITHUB_PAT}"
+      RUNNER_SCOPE: "org"
+      GITHUB_OWNER: "bzhzion"
+      RUNNER_NAME: "unraid-bzhzion"
+      RUNNER_WORKDIR: "/tmp/runner/work"
+      LABELS: "self-hosted,linux,x64"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-bzhzion-work:/tmp/runner
+
+volumes:
+  runner-painteau-work:
+  runner-bzhzion-work:
